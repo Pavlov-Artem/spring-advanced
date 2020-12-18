@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group 'com.epam.esm'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    logVersion = '2.13.3'
+    springVersion = '5.2.9.RELEASE'
+}
+
+dependencies {
+    compile project(':persistence')
+
+    compile group: 'org.springframework', name: 'spring-context', version: springVersion
+    compile group: 'cglib', name: 'cglib', version: '3.3.0'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: logVersion
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: logVersion
+
+    testCompile('org.junit.jupiter:junit-jupiter:5.6.0')
+}
+
+test {
+    useJUnitPlatform()
+}

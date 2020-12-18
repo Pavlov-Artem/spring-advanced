@@ -1,0 +1,13 @@
+ext {
+    springVersion = '5.2.9.RELEASE'
+    servletsVersion = '3.0.1'
+    jacksonVersion = '2.11.3'
+    mockitoVersion = '2.7.21'
+    junitVersion = '4.12'
+    javaxPersistenceVersion = '1.0'
+    log4jVersion = '2.13.3'
+    apacheCommonsLangVersion = '3.11'
+    jerseyVersion = '1.18'
+    hikariCPVersion = '3.4.5'
+    springBootVesion = '2.4.1'
+}

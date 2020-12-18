@@ -1,0 +1,36 @@
+plugins {
+//	id 'org.springframework.boot' version '2.4.1'
+	id 'java'
+}
+
+group 'com.epam.esm'
+version '1.0-SNAPSHOT'
+
+//repositories {
+//	mavenCentral()
+//}
+subprojects {
+	apply from: "../versions.gradle"
+
+	apply plugin: 'java'
+
+	sourceCompatibility = 1.8
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+
+dependencies {
+
+	compile project('persistence')
+	compile project('service')
+	compile project('rest-api')
+
+
+
+//	implementation 'org.springframework.boot:spring-boot-starter-parent'
+
+//	testCompile group: 'junit', name: 'junit', version: '4.12'
+}

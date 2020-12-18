@@ -1,0 +1,5 @@
+rootProject.name = 'spring-boot-advanced'
+include 'service'
+include 'rest-api'
+include 'persistence'
+
