@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import javax.persistence.metamodel.StaticMetamodel;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,12 +14,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Access(AccessType.FIELD)
 @Table(name = DAOConstants.ORDER_TABLE)
 public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = DAOConstants.ORDER_ID)
-    private Long id;
+    protected Long id;
     @Column(name = DAOConstants.ORDER_TIME)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Timestamp purchaseDate;
@@ -100,4 +102,6 @@ public class Order implements Serializable {
                 ", orderDetails=" + orderDetails +
                 '}';
     }
+
+
 }

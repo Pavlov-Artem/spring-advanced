@@ -42,28 +42,28 @@ public class HibernateConfig {
         return properties;
     }
 
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        LOGGER.info("Configuring hikari cp");
-        HikariConfig hc = new HikariConfig();
-        hc.setDriverClassName(environment.getRequiredProperty("driver-class-name"));
-        hc.setJdbcUrl(environment.getRequiredProperty("url"));
-        hc.setUsername(environment.getRequiredProperty("username"));
-        hc.setPassword(environment.getRequiredProperty("password"));
-        return new HikariDataSource(hc);
-    }
-
 //    @Bean
+//    @Primary
 //    public DataSource dataSource() {
 //        LOGGER.info("Configuring hikari cp");
 //        HikariConfig hc = new HikariConfig();
-//        hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
-//        hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
-//        hc.setUsername(environment.getRequiredProperty("spring.datasource.username"));
-//        hc.setPassword(environment.getRequiredProperty("spring.datasource.password"));
+//        hc.setDriverClassName(environment.getRequiredProperty("driver-class-name"));
+//        hc.setJdbcUrl(environment.getRequiredProperty("url"));
+//        hc.setUsername(environment.getRequiredProperty("username"));
+//        hc.setPassword(environment.getRequiredProperty("password"));
 //        return new HikariDataSource(hc);
 //    }
+
+    @Bean
+    public DataSource dataSource() {
+        LOGGER.info("Configuring hikari cp");
+        HikariConfig hc = new HikariConfig();
+        hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
+        hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
+        hc.setUsername(environment.getRequiredProperty("spring.datasource.username"));
+        hc.setPassword(environment.getRequiredProperty("spring.datasource.password"));
+        return new HikariDataSource(hc);
+    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

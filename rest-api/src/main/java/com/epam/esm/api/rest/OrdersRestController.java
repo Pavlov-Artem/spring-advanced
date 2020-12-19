@@ -23,6 +23,11 @@ public class OrdersRestController {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getAll(pageSize, page));
     }
 
+    @GetMapping(value = "/orders", params = {"user"})
+    public ResponseEntity<List<Order>> getAllUserOrders(@RequestParam("user") Long user){
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllUserOrders(1L,1L,user));
+    }
+
     @PostMapping(value = "/orders")
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderDto createOrderDto) throws DAOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(createOrderDto));

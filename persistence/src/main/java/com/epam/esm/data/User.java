@@ -16,9 +16,9 @@ public class User extends RepresentationModel<User> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = DAOConstants.USER_ID)
-    private Long id;
+    protected Long id;
     @Column(name = DAOConstants.USER_NAME, nullable = false)
-    private String name;
+    protected String name;
     @Column(name = DAOConstants.USER_EMAIL, nullable = false, unique = true)
     private String email;
 

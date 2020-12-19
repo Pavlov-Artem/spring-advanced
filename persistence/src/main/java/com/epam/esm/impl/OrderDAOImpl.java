@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +67,24 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
+    @Transactional
     public List<Order> findByUserId(Long pageSize, Long page, Long userId) {
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+//
+//        Root<User> userRoot = cq.from(User.class);
+//        //cq.where(cb.equal(userRoot.get("id"),userId));
+//        Join<Order, User> orders = userRoot.join("user");
+//        CriteriaQuery<Order> query = cq.select(orders);
+
+        return null;
+        //entityManager.createQuery(query).getResultList();
+//        Root<User> userRoot = cq.from(User.class);
+//        Metamodel metamodel = entityManager.getMetamodel();
+//        EntityType<Order> Order_ = metamodel.entity(Order.class);
+//        Root<Order> orderRoot = cq.from(Order.class);
+//        cq.where(orderRoot.get(Order_.id))
+
 //        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 //        //getting count of all objects in db
 //        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
@@ -89,7 +105,7 @@ public class OrderDAOImpl implements OrderDAO {
 //        typedQuery.setMaxResults(Math.toIntExact(pageSize));
 //        return typedQuery.getResultList();
 
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
 //        CriteriaQuery<Order> cq = criteriaBuilder.createQuery(Order.class);
 //        Root<Order> root = cq.from(Order.class);
@@ -99,6 +115,5 @@ public class OrderDAOImpl implements OrderDAO {
 //        EntityType<User> user = m.entity(User.class);
 //        Root<Order> orders = cq.from(Order.class);
 //        Join<Order, User> userJoin = orders.join(order.)
-        return null;
     }
 }

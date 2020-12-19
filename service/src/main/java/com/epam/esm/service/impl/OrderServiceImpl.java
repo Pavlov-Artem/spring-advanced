@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findAllUserOrders(Long pageSize, Long page, Long userId) {
-        return null;
+        return orderDAO.findByUserId(1L,1L, userId);
     }
 
     @Override
