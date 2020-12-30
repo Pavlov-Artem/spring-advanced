@@ -1,7 +1,8 @@
 package com.epam.esm.impl.db.service.impl;
 
-import com.epam.esm.impl.db.config.HibernateConfig;
+import com.epam.esm.impl.config.HibernateConfig;
 import com.epam.esm.impl.db.service.InMemoryDatabaseUtil;
+import com.epam.esm.service.DAOException;
 import com.epam.esm.service.UserDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,13 +10,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.ActiveProfiles;
 
 //@ExtendWith(SpringExtension.class)
@@ -28,14 +27,15 @@ import org.springframework.test.context.ActiveProfiles;
 //@DataJpaTest
 //@SpringBootTest
 //@ContextConfiguration(classes = {H2JpaConfig.class, TestConfigs.class})
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 //@ComponentScan(excludeFilters  = {@ComponentScan.Filter(
 //        type = FilterType.ASSIGNABLE_TYPE, classes = {HibernateConfig.class})})
-@EnableAutoConfiguration(exclude=HibernateConfig.class)
+//@EnableAutoConfiguration(exclude=HibernateConfig.class)
 class UserDAOImplTest {
 
     private static final Logger LOGGER = LogManager.getLogger(UserDAOImplTest.class);
     private InMemoryDatabaseUtil inMemoryDatabaseUtil = new InMemoryDatabaseUtil();
+
     private EmbeddedDatabase embeddedDatabase;
 
     private UserDAO userDAO;
@@ -52,7 +52,12 @@ class UserDAOImplTest {
     void setUp() {
         ApplicationContext context = new AnnotationConfigApplicationContext(HibernateConfig.class);
         userDAO = context.getBean(UserDAO.class);
-        inMemoryDatabaseUtil.setUpH2Db(embeddedDatabase);
+        //embeddedDatabase = context.getBean(EmbeddedDatabase.class);
+//        embeddedDatabase = new EmbeddedDatabaseBuilder()
+//                .addDefaultScripts()
+//                .setType(EmbeddedDatabaseType.H2)
+//                .build();
+//        inMemoryDatabaseUtil.setUpH2Db(embeddedDatabase);
     }
 
     @AfterEach
@@ -78,7 +83,8 @@ class UserDAOImplTest {
     }
 
     @Test
-    void findById() {
+    void findById() throws DAOException {
+
     }
 
     @Test

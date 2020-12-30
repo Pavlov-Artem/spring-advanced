@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,66 +20,64 @@ import java.util.stream.Collectors;
 @EnableTransactionManagement
 public class GiftCertificateServiceImpl implements GiftCertificatesService {
 
-
-    private GiftCertificateDAO giftCertificateDAO;
+    private GifCertificateDAOAdv giftCertificateDAO;
     private TagDAO tagDAO;
 
-    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDAO tagDAO) {
+    public GiftCertificateServiceImpl(GifCertificateDAOAdv giftCertificateDAO, TagDAO tagDAO) {
         this.giftCertificateDAO = giftCertificateDAO;
         this.tagDAO = tagDAO;
     }
 
     @Override
     public List<GiftCertificateDto> getAllCertificates() {
+        throw new UnsupportedOperationException("unsupported");
+    }
 
-
-        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll();
+    @Override
+    public List<GiftCertificateDto> findCertificatesByCriteria(CertificateCriteriaParameters certificateCriteriaParameters) {
+        for (String tagName : certificateCriteriaParameters.getTags()) {
+            certificateCriteriaParameters.getExistedTags().add(tagDAO.findByName(tagName));
+        }
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAllWithCriteria(certificateCriteriaParameters);
         return giftCertificates.stream()
-                .map(gc -> CertificateBuilder.buildCertificateDto(gc, tagDAO.findAllCertificateTags(gc.getId())))
+                .map(CertificateBuilder::buildCertificateDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<GiftCertificateDto> findCertificatesByCriteria(Map<CertificateSearchCriteria, String> criteriaMap, List<CertificateSortCriteria> sortCriteria) {
-
-        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAllWithCriteria(criteriaMap, sortCriteria);
-
-        return giftCertificates.stream()
-                .map(gc -> CertificateBuilder.buildCertificateDto(gc, tagDAO.findAllCertificateTags(gc.getId())))
-                .collect(Collectors.toList());
-
+    public List<GiftCertificateDto> findByTags(List<String> tagNames, Long page, Long pageSize) {
+        List<Tag> tags = new ArrayList<>();
+        for (String tagName : tagNames) {
+            tags.add(tagDAO.findByName(tagName));
+        }
+        List<GiftCertificateDto> giftCertificateDtos = new ArrayList<>();
+        for (GiftCertificate giftCertificate : giftCertificateDAO.findCertificatesByTags(tags, page, pageSize)) {
+            giftCertificateDtos.add(CertificateBuilder.buildCertificateDto(giftCertificate));
+        }
+        return giftCertificateDtos;
     }
 
     @Override
     public GiftCertificateDto findById(Long id) throws DAOException {
         //Dao throws EntityNotFoundException
         GiftCertificate giftCertificate = giftCertificateDAO.findById(id).get();
-        return CertificateBuilder.buildCertificateDto(giftCertificate, tagDAO.findAllCertificateTags(giftCertificate.getId()));
+        return CertificateBuilder.buildCertificateDto(giftCertificate);
     }
-
 
     @Override
     @Transactional
-    public void createCertificate(GiftCertificateCreateDto giftCertificateCreateDto) throws DAOException {
-
-        GiftCertificate gc = CertificateBuilder.buildGiftCertificateFromCreationDto(giftCertificateCreateDto);
-        gc.setId(giftCertificateDAO.createEntity(gc));
-        createTagsIfNotExist(giftCertificateCreateDto.getTags());
-        giftCertificateDAO.addCertificateTags(giftCertificateCreateDto.getTags(), gc.getId());
+    public void createCertificate(GiftCertificateCreateDto giftCertificateDto) throws DAOException {
+        GiftCertificate giftCertificate = CertificateBuilder.buildGiftCertificateFromCreationDto(giftCertificateDto);
+        giftCertificateDAO.createEntity(giftCertificate);
     }
 
     @Override
     @Transactional
     public void removeCertificate(Long id) throws DAOException {
-
         Optional<GiftCertificate> optionalGiftCertificate = giftCertificateDAO.findById(id);
-        if (optionalGiftCertificate.isPresent()) {
-            giftCertificateDAO.deleteCertificate(optionalGiftCertificate.get());
-        } else {
-            throw new DAOException(String.format("certificate with id=%s not found", id));
-        }
-
+        giftCertificateDAO.deleteEntity(optionalGiftCertificate.get());
     }
+
 
     @Override
     @Transactional
@@ -94,22 +92,8 @@ public class GiftCertificateServiceImpl implements GiftCertificatesService {
         Timestamp currentDateTimestamp = new Timestamp(currentDate.getTime());
         newCertificate.setLastUpdateTime(currentDateTimestamp);
 
-        giftCertificateDAO.updateCertificate(newCertificate);
-        createTagsIfNotExist(giftCertificateCreateDto.getTags());
-        giftCertificateDAO.updateCertificateTags(id, giftCertificateCreateDto.getTags());
-
+        giftCertificateDAO.updateEntity(newCertificate);
     }
 
-    private void createTagsIfNotExist(List<Tag> tags) throws DAOException {
-
-        for (Tag tag : tags) {
-            Optional<Tag> optionalTag = tagDAO.findByName(tag.getName());
-            if (optionalTag.isPresent()) {
-                tag.setId(optionalTag.get().getId());
-            } else {
-                tag.setId(tagDAO.createEntity(tag));
-            }
-        }
-    }
 
 }

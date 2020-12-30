@@ -48,6 +48,42 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
         this.tags = tags;
     }
 
+    public GiftCertificateDto(Iterable<Link> initialLinks, Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
+        super(initialLinks);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.createDate = createDate;
+        this.lastUpdateTime = lastUpdateTime;
+        this.duration = duration;
+        this.tags = tags;
+    }
+
+
+    //    public GiftCertificateDto(Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//        this.price = price;
+//        this.createDate = createDate;
+//        this.lastUpdateTime = lastUpdateTime;
+//        this.duration = duration;
+//        this.tags = tags;
+//    }
+//
+//    public GiftCertificateDto(Link initialLink, Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
+//        super(initialLink);
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//        this.price = price;
+//        this.createDate = createDate;
+//        this.lastUpdateTime = lastUpdateTime;
+//        this.duration = duration;
+//        this.tags = tags;
+//    }
+
     public Long getId() {
         return id;
     }

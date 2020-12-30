@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 public class TagServiceImpl implements TagService {
 
-
     private TagDAO tagDAO;
 
     public TagServiceImpl(TagDAO tagDAO) {
@@ -21,8 +20,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getAllTags() {
-        return tagDAO.findAll();
+    public List<Tag> getAllTags(Long page, Long pageSize) {
+        return tagDAO.findAll(pageSize,page);
     }
 
     @Override
@@ -37,20 +36,28 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public Tag findByName(String name) {
+        return tagDAO.findByName(name);
+    }
+
+    @Override
     public void createTag(Tag tag) throws DAOException {
-
         tagDAO.createEntity(tag);
-
     }
 
     @Override
     public void removeTag(Long id) throws DAOException {
 
-        Optional<Tag> tag = tagDAO.findById(id);
-        if (tag.isPresent()) {
-            tagDAO.deleteCertificate(tag.get());
-        } else {
-            throw new EntityNotFoundDaoException("cannot remove tag because tag with such id doen't exist", id);
-        }
+//        Optional<Tag> tag = tagDAO.findById(id);
+//        if (tag.isPresent()) {
+//            tagDAO.deleteCertificate(tag.get());
+//        } else {
+//            throw new EntityNotFoundDaoException("cannot remove tag because tag with such id doen't exist", id);
+//        }
+    }
+
+    @Override
+    public Tag findMostWidelyUsedTag() {
+        return tagDAO.findMostWidelyUsedTag();
     }
 }

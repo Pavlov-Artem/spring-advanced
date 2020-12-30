@@ -12,7 +12,9 @@ public interface GiftCertificatesService {
 
     List<GiftCertificateDto> getAllCertificates();
 
-    List<GiftCertificateDto> findCertificatesByCriteria(Map<CertificateSearchCriteria, String> criteriaMap, List<CertificateSortCriteria> sortCriteria);
+    List<GiftCertificateDto> findCertificatesByCriteria(CertificateCriteriaParameters certificateCriteriaParameters);
+
+    List<GiftCertificateDto> findByTags(List<String> tagNames, Long page, Long pageSize);
 
     GiftCertificateDto findById(Long id) throws DAOException;
 

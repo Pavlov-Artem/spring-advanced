@@ -23,6 +23,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-hateoas
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: springBootVesion
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVesion
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: springBootVesion
 
 
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
@@ -31,6 +32,7 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-jdbc', version: springVersion
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
+//    runtime('com.')
 //    compile group: 'org.springframework.boot:spring-boot-starter-test', version: springBootVersion
 
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
@@ -50,7 +52,7 @@ dependencies {
 //    testImplementation('org.springframework.boot:spring-boot-starter-test')
 //    //testCompile('org.springframework.boot:spring-boot-starter-test')
 //    testCompile('org.junit.jupiter:junit-jupiter:5.6.2')
-//    testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile('org.junit.jupiter:junit-jupiter:5.6.2')

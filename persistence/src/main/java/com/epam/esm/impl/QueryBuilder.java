@@ -2,10 +2,15 @@ package com.epam.esm.impl;
 
 import com.epam.esm.DAOConstants;
 import com.epam.esm.data.GiftCertificate;
+import com.epam.esm.data.Tag;
+import com.epam.esm.data.User;
+import com.epam.esm.data.UserOrder;
 import com.epam.esm.service.CertificateSearchCriteria;
 import com.epam.esm.service.CertificateSortCriteria;
 import com.epam.esm.service.DAOException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +42,11 @@ class QueryBuilder {
         return columnsToUpdate.toString();
     }
 
-
-    static String buildCompoundQuery(Map<CertificateSearchCriteria, String> searchCriteria, List<CertificateSortCriteria> sortCriteria) {
+    static String buildCompoundQuery(Map<CertificateSearchCriteria, String> searchCriteria) {
 
         StringBuilder compoundQuery = new StringBuilder();
         compoundQuery.append(buildSelectQueryConditionPart(searchCriteria))
-                .append(buildSortPart(sortCriteria))
+//                .append(buildSortPart(sortCriteria))
                 .append(";");
 
 
@@ -112,40 +116,6 @@ class QueryBuilder {
                 .append("'%")
                 .append(value)
                 .append("%' ");
-    }
-
-    private static String buildSortPart(List<CertificateSortCriteria> sortCriteria) {
-
-        boolean firstCondition = false;
-        StringBuilder sortPart = new StringBuilder();
-        for (CertificateSortCriteria csc : sortCriteria) {
-            if (firstCondition) {
-                sortPart.append(", ");
-            } else {
-                sortPart.append(" ORDER BY ");
-            }
-
-            if (csc.equals(CertificateSortCriteria.NAME_ASC)) {
-                sortPart.append(DAOConstants.GC_NAME)
-                        .append(" ")
-                        .append(ASC);
-
-            } else if (csc.equals(CertificateSortCriteria.NAME_DESC)) {
-                sortPart.append(DAOConstants.GC_NAME)
-                        .append(" ")
-                        .append(DESC);
-            } else if (csc.equals(CertificateSortCriteria.PRICE_ASC)) {
-                sortPart.append(DAOConstants.GC_PRICE)
-                        .append(" ")
-                        .append(ASC);
-            } else if (csc.equals(CertificateSortCriteria.PRICE_DESC)) {
-                sortPart.append(DAOConstants.GC_PRICE)
-                        .append(" ")
-                        .append(DESC);
-            }
-            firstCondition = true;
-        }
-        return sortPart.toString();
     }
 
 

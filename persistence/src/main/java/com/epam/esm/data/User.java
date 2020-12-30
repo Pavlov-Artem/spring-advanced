@@ -1,11 +1,14 @@
 package com.epam.esm.data;
 
 import com.epam.esm.DAOConstants;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = DAOConstants.USER_TABLE)
@@ -21,6 +24,28 @@ public class User extends RepresentationModel<User> implements Serializable {
     protected String name;
     @Column(name = DAOConstants.USER_EMAIL, nullable = false, unique = true)
     private String email;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<UserOrder> userOrders = new HashSet<>();
+
+    public User(String name, String email, Set<UserOrder> userOrders) {
+        this.name = name;
+        this.email = email;
+        this.userOrders = userOrders;
+    }
+
+    public User(Link initialLink, String name, String email, Set<UserOrder> userOrders) {
+        super(initialLink);
+        this.name = name;
+        this.email = email;
+        this.userOrders = userOrders;
+    }
+
+    public User(Iterable<Link> initialLinks, String name, String email, Set<UserOrder> userOrders) {
+        super(initialLinks);
+        this.name = name;
+        this.email = email;
+        this.userOrders = userOrders;
+    }
 
     public User(String name, String email) {
         this.name = name;

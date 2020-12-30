@@ -1,12 +1,13 @@
-package com.epam.esm.impl.db.config;
+package com.epam.esm.impl.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -23,8 +24,10 @@ import java.util.Properties;
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
 @EnableTransactionManagement
-@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
-@PropertySource("datasource.properties")
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
+        DataSourceTransactionManagerAutoConfiguration.class,
+        HibernateJpaAutoConfiguration.class})
+@PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 public class HibernateConfig {
 
     private static final Logger LOGGER = LogManager.getLogger(HibernateConfig.class);
@@ -35,28 +38,17 @@ public class HibernateConfig {
         this.environment = environment;
     }
 
+
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        // properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("spring.jpa.show-sql"));
         return properties;
     }
 
-//    @Bean
-//    @Primary
-//    public DataSource dataSource() {
-//        LOGGER.info("Configuring hikari cp");
-//        HikariConfig hc = new HikariConfig();
-//        hc.setDriverClassName(environment.getRequiredProperty("driver-class-name"));
-//        hc.setJdbcUrl(environment.getRequiredProperty("url"));
-//        hc.setUsername(environment.getRequiredProperty("username"));
-//        hc.setPassword(environment.getRequiredProperty("password"));
-//        return new HikariDataSource(hc);
-//    }
-
     @Bean
+    @Profile("prod")
     public DataSource dataSource() {
-        LOGGER.info("Configuring hikari cp");
         HikariConfig hc = new HikariConfig();
         hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
         hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
@@ -65,14 +57,57 @@ public class HibernateConfig {
         return new HikariDataSource(hc);
     }
 
+//    @Bean
+//    @Profile("test")
+//    @ConfigurationProperties(value = "application-test.properties")
+//    public DataSource testDataSource() {
+////        LOGGER.info("Configuring hikari cp");
+////        LOGGER.info("props driver" + environment.getRequiredProperty("driver-class-name"));
+////        LOGGER.info("props url" + environment.getRequiredProperty("url"));
+////        LOGGER.info("props user" + environment.getRequiredProperty("username"));
+////        HikariConfig hc = new HikariConfig();
+//////        hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
+//////        hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
+//////        hc.setUsername(environment.getRequiredProperty("spring.datasource.username"));
+//////        hc.setPassword(environment.getRequiredProperty("spring.datasource.password"));
+//        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
+//                .addDefaultScripts()
+//                .setType(EmbeddedDatabaseType.H2)
+//                .build();
+////        LOGGER.info(hc.getUsername());
+//        dataSource = embeddedDatabase;
+//        return embeddedDatabase;
+//    }
+
+
+//    public DataSource dataSourceTest(){
+//        EmbeddedDatabase
+//    }
+//    @Bean
+//    public DataSource dataSourceTest() {
+//        LOGGER.info("Configuring hikari cp");
+//        LOGGER.info("props driver" + environment.getRequiredProperty("driver-class-name"));
+//        LOGGER.info("props url" + environment.getRequiredProperty("url"));
+//        LOGGER.info("props user" + environment.getRequiredProperty("username"));
+//        HikariConfig hc = new HikariConfig();
+//        hc.setDriverClassName(environment.getRequiredProperty("driver-class-name"));
+//        hc.setJdbcUrl(environment.getRequiredProperty("url"));
+//        hc.setUsername(environment.getRequiredProperty("username"));
+//        hc.setPassword(environment.getRequiredProperty("password"));
+//        LOGGER.info(hc.getUsername());
+//        return new HikariDataSource(hc);
+//    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(this.dataSource());
         em.setJpaDialect(new HibernateJpaDialect());
-        em.setPackagesToScan("com.epam.esm");
+        em.setPackagesToScan("com.epam.esm.data");
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter(); // JPA implementation
+        em.setJpaProperties(hibernateProperties());
         em.setJpaVendorAdapter(vendorAdapter);
+        LOGGER.info(vendorAdapter.getJpaDialect());
         return em;
     }
 

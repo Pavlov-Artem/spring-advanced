@@ -24,13 +24,13 @@ public class OrderDetails implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = DAOConstants.ORDER_DETAILS_ORDER_ID)
     @JsonBackReference
-    private Order order;
+    private UserOrder userOrder;
 
 
-    public OrderDetails(BigDecimal cost, GiftCertificate giftCertificate, Order order) {
+    public OrderDetails(BigDecimal cost, GiftCertificate giftCertificate, UserOrder userOrder) {
         this.cost = cost;
         this.giftCertificate = giftCertificate;
-        this.order = order;
+        this.userOrder = userOrder;
     }
 
     public OrderDetails() {
@@ -60,12 +60,12 @@ public class OrderDetails implements Serializable {
         this.giftCertificate = giftCertificate;
     }
 
-    public Order getOrder() {
-        return order;
+    public UserOrder getUserOrder() {
+        return userOrder;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setUserOrder(UserOrder userOrder) {
+        this.userOrder = userOrder;
     }
 
     @Override

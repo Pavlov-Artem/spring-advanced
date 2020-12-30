@@ -33,6 +33,8 @@ public final class DAOConstants {
     public static final String ORDER_TABLE = "orders";
     public static final String ORDER_ID = "id";
     public static final String ORDER_TIME = "purchase_date";
+    public static final String ORDER_COST = "cost";
+    public static final String ORDER_GC = "gift_certificate_id";
     public static final String ORDER_USER_ID = "user_id";
     //order details
     public static final String ORDER_DETAILS_TABLE = "order_details";

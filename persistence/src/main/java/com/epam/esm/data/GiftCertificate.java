@@ -3,6 +3,9 @@ package com.epam.esm.data;
 
 
 import com.epam.esm.DAOConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.hateoas.RepresentationModel;
 
 
@@ -10,8 +13,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = DAOConstants.CERTIFICATE_TABLE)
@@ -28,18 +32,22 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     @Column(name = DAOConstants.GC_PRICE)
     private BigDecimal price;
     @Column(name = DAOConstants.GC_CREATE_DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Timestamp createDate;
     @Column(name = DAOConstants.GC_LAST_UPDATE_DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Timestamp lastUpdateTime;
     @Column(name = DAOConstants.GC_DURATION)
     private int duration;
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinTable(name = DAOConstants.CERTIFICATE_TAG_TABLE,
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.EAGER)
+    @JoinTable(
+            //cross table name
+            name = DAOConstants.CERTIFICATE_TAG_TABLE,
             //Certificate foreign key
-            joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID),
+            joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID, referencedColumnName = "id"),
             //Tag foreign key
-            inverseJoinColumns = @JoinColumn(name = DAOConstants.CT_TAG_ID))
-    private List<Tag> certificateTags;
+            inverseJoinColumns = @JoinColumn(name = DAOConstants.CT_TAG_ID, referencedColumnName = "id"))
+    private Set<Tag> certificateTags = new HashSet<>();
 
 
     public GiftCertificate() {
@@ -55,7 +63,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         this.duration = duration;
     }
 
-    public GiftCertificate(String name, String description, BigDecimal price, Timestamp createDate, Timestamp lastUpdateTime, int duration, List<Tag> certificateTags) {
+    public GiftCertificate(String name, String description, BigDecimal price, Timestamp createDate, Timestamp lastUpdateTime, int duration, Set<Tag> certificateTags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -121,11 +129,11 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
         this.duration = duration;
     }
 
-    public List<Tag> getCertificateTags() {
+    public Set<Tag> getCertificateTags() {
         return certificateTags;
     }
 
-    public void setCertificateTags(List<Tag> certificateTags) {
+    public void setCertificateTags(Set<Tag> certificateTags) {
         this.certificateTags = certificateTags;
     }
 

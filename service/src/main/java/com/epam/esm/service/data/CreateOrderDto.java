@@ -4,11 +4,11 @@ import java.util.List;
 
 public class CreateOrderDto {
     private Long userId;
-    private List<Long> certificateIds;
+    private Long certificateId;
 
-    public CreateOrderDto(Long userId, List<Long> certificateIds) {
+    public CreateOrderDto(Long userId, Long certificateId) {
         this.userId = userId;
-        this.certificateIds = certificateIds;
+        this.certificateId = certificateId;
     }
 
     public CreateOrderDto() {
@@ -22,12 +22,12 @@ public class CreateOrderDto {
         this.userId = userId;
     }
 
-    public List<Long> getCertificateIds() {
-        return certificateIds;
+    public Long getCertificateId() {
+        return certificateId;
     }
 
-    public void setCertificateIds(List<Long> certificateIds) {
-        this.certificateIds = certificateIds;
+    public void setCertificateId(Long certificateId) {
+        this.certificateId = certificateId;
     }
 }
 

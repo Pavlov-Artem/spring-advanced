@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 public class GiftCertificateRestController {
 
@@ -36,28 +39,27 @@ public class GiftCertificateRestController {
      * @BY_NAME_PART search certificate by part of name,
      * @BY_DESCRIPTION_PART search certificate by part of description;
      * available sort params:
-     * @NAME_ASC
-     * @PRICE_ASC
-     * @NAME_DESC
-     * @NAME_DESC
+     * @NAME
+     * @PRICE
+     * @ASC
+     * @DESC
      **/
     @GetMapping("/certificates")
-    public List<GiftCertificateDto> all(@RequestParam(required = false) Map<String, String> params) {
+    public List<GiftCertificateDto> all(@RequestParam(required = false) Map<String, String> params) throws DAOException {
 
-        return params.isEmpty() ? giftCertificatesService.getAllCertificates()
-                : giftCertificatesService.findCertificatesByCriteria(
-                GiftCertificateQueryParametersMapper.mapSearchParams(params), GiftCertificateQueryParametersMapper.mapSortCriteria(params));
-
+        List<GiftCertificateDto> giftCertificateDtos = giftCertificatesService.findCertificatesByCriteria(GiftCertificateQueryParametersMapper.mapCriteriaParameters(params));
+        for (GiftCertificateDto certificateDto: giftCertificateDtos) {
+            addLinks(certificateDto);
+        }
+        return giftCertificateDtos;
     }
-
 
     @GetMapping(value = "/certificates/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GiftCertificateDto> getById(@PathVariable Long id) throws DAOException {
-
-        return ResponseEntity.status(HttpStatus.OK).body(giftCertificatesService.findById(id));
-
+        GiftCertificateDto giftCertificateDto = giftCertificatesService.findById(id);
+        addLinks(giftCertificateDto);
+        return ResponseEntity.status(HttpStatus.OK).body(giftCertificateDto);
     }
-
 
     @PutMapping("/certificates/{id}")
     public ResponseEntity<String> updateCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto, @PathVariable Long id) throws DAOException {
@@ -67,7 +69,6 @@ public class GiftCertificateRestController {
 
     @PutMapping("/certificates")
     public ResponseEntity<String> createCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto) throws DAOException {
-
         ValidationResult validationResult = certificateCreationValidator.validate(giftCertificateCreateDto);
         if (validationResult.isValid()) {
             giftCertificatesService.createCertificate(giftCertificateCreateDto);
@@ -76,12 +77,10 @@ public class GiftCertificateRestController {
         } else {
             throw new ValidationException("cannot create certificate because of invalid input data", validationResult);
         }
-
     }
 
     @DeleteMapping(value = "/certificates/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> removeCertificate(@PathVariable Long id) {
-
         try {
             giftCertificatesService.removeCertificate(id);
             return ResponseEntity.status(HttpStatus.OK)
@@ -90,9 +89,12 @@ public class GiftCertificateRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("something went wrong");
         }
-
-
     }
 
-
+    private void addLinks(GiftCertificateDto giftCertificateDto) throws DAOException {
+        giftCertificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).getById(giftCertificateDto.getId())).withSelfRel());
+        giftCertificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).createCertificate(new GiftCertificateCreateDto())).withRel("create"));
+        giftCertificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).updateCertificate(new GiftCertificateCreateDto(), 1L)).withRel("update"));
+        giftCertificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).removeCertificate(giftCertificateDto.getId())).withRel("remove"));
+    }
 }

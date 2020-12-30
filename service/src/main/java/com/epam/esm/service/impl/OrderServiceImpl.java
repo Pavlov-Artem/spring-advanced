@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.data.GiftCertificate;
-import com.epam.esm.data.Order;
+import com.epam.esm.data.UserOrder;
 import com.epam.esm.data.OrderDetails;
 import com.epam.esm.service.*;
 import com.epam.esm.service.data.CreateOrderDto;
@@ -22,47 +22,46 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDAO orderDAO;
     private UserDAO userDAO;
-    private GiftCertificateDAO giftCertificateDAO;
+    private GifCertificateDAOAdv giftCertificateDAO;
 
-    public OrderServiceImpl(OrderDAO orderDAO, UserDAO userDAO, GiftCertificateDAO giftCertificateDAO) {
+    public OrderServiceImpl(OrderDAO orderDAO, UserDAO userDAO, GifCertificateDAOAdv giftCertificateDAO) {
         this.orderDAO = orderDAO;
         this.userDAO = userDAO;
         this.giftCertificateDAO = giftCertificateDAO;
     }
 
     @Override
-    public List<Order> getAll(Long pageSize, Long page) {
+    public List<UserOrder> getAll(Long pageSize, Long page) {
         return orderDAO.findAll(pageSize, page);
     }
 
     @Override
-    public List<Order> findAllUserOrders(Long pageSize, Long page, Long userId) {
+    public UserOrder findById(Long id) throws DAOException {
+        return orderDAO.findById(id).get();
+    }
+
+    @Override
+    public List<UserOrder> findAllUserOrders(Long pageSize, Long page, Long userId) {
         return orderDAO.findByUserId(1L,1L, userId);
     }
 
     @Override
     @Transactional
-    public Order createOrder(CreateOrderDto order) throws DAOException {
-        Order newOrder = createNewOrder();
-        newOrder.setUser(userDAO.findById(order.getUserId()).get());
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        for (Long gcId : order.getCertificateIds()) {
-            Optional<GiftCertificate> giftCertificate = giftCertificateDAO.findById(gcId);
-            giftCertificate.ifPresent(giftCertificates::add);
-        }
-        for (GiftCertificate giftCertificate : giftCertificates) {
-            newOrder.getOrderDetails().add(new OrderDetails(giftCertificate.getPrice(), giftCertificate, newOrder));
-        }
-
-        Long orderId = orderDAO.createEntity(newOrder);
-        Order createdOrder = orderDAO.findById(orderId).get();
-        return createdOrder;
+    public UserOrder createOrder(CreateOrderDto order) throws DAOException {
+        UserOrder newUserOrder = createNewOrder();
+        newUserOrder.setUser(userDAO.findById(order.getUserId()).get());
+        Optional<GiftCertificate> giftCertificate = giftCertificateDAO.findById(order.getCertificateId());
+        newUserOrder.setCost(giftCertificate.get().getPrice());
+        newUserOrder.setGiftCertificate(giftCertificate.get());
+//
+        Long orderId = orderDAO.createEntity(newUserOrder);
+        return orderDAO.findById(orderId).get();
     }
 
     @Override
     @Transactional
     public void removeOrder(Long orderId) throws DAOException {
-        Optional<Order> order = orderDAO.findById(orderId);
+        Optional<UserOrder> order = orderDAO.findById(orderId);
         if (order.isPresent()) {
             orderDAO.deleteEntity(order.get());
         } else {
@@ -71,18 +70,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(Order order, Long orderId) {
+    public void updateOrder(UserOrder userOrder, Long orderId) {
 
     }
 
-    private Order createNewOrder() {
+    private UserOrder createNewOrder() {
         Date currentDate = new Date();
         Timestamp currentDateTimestamp = new Timestamp(currentDate.getTime());
 
-        Order order = new Order();
-        order.setPurchaseDate(currentDateTimestamp);
-        List<OrderDetails> orderDetails = new ArrayList<>();
+        UserOrder userOrder = new UserOrder();
+        userOrder.setPurchaseDate(currentDateTimestamp);
 
-        return order;
+        return userOrder;
     }
 }

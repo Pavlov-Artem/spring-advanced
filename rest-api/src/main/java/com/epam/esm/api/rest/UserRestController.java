@@ -1,5 +1,6 @@
 package com.epam.esm.api.rest;
 
+import com.epam.esm.data.Tag;
 import com.epam.esm.data.User;
 import com.epam.esm.service.DAOException;
 
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 public class UserRestController {
     private UserService userService;
@@ -22,11 +26,21 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/users", params = {"page", "size"})
-    public ResponseEntity<List<User>> getAll(@RequestParam("size") Long pageSize, @RequestParam("page") Long page){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAll(page, pageSize));
+    public ResponseEntity<List<User>> getAll(@RequestParam("size") Long pageSize, @RequestParam("page") Long page) throws DAOException {
+        List<User> users = userService.getAll(page, pageSize);
+        for (User user: users){
+            addLinks(user);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
     @GetMapping(value = "/users/{id}")
     public ResponseEntity<User> getById(@PathVariable Long id) throws DAOException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findById(id));
+        User user = userService.findById(id);
+        addLinks(user);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    private void addLinks(User user) throws DAOException {
+        user.add(linkTo(methodOn(UserRestController.class).getById(user.getId())).withSelfRel());
     }
 }

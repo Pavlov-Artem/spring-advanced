@@ -8,11 +8,15 @@ import java.util.Optional;
 
 
 @Repository
-public interface TagDAO extends CRUDOperation<Tag> {
+public interface TagDAO extends CRUDOperations<Tag> {
 
-    Optional<Tag> findByName(String name);
+    Tag findByName(String name);
 
     List<Tag> findAllCertificateTags(Long certificateId);
 
-
+    /**
+     * the most widely used tag of a user with the highest cost of all orders.
+     * @return
+     */
+    Tag findMostWidelyUsedTag();
 }
