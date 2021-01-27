@@ -1,4 +1,4 @@
-package com.epam.esm.api.data;
+package com.epam.esm.service.data;
 
 import com.epam.esm.data.Tag;
 

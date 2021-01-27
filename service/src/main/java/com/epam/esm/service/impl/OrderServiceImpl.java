@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.data.GiftCertificate;
 import com.epam.esm.data.UserOrder;
-import com.epam.esm.data.OrderDetails;
 import com.epam.esm.service.*;
 import com.epam.esm.service.data.CreateOrderDto;
 import com.epam.esm.service.exceptions.OrderNotFoundException;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

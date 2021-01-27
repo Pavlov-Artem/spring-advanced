@@ -5,7 +5,6 @@ import com.epam.esm.service.data.GiftCertificateDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public interface GiftCertificatesService {

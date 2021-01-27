@@ -17,6 +17,7 @@ ext {
 dependencies {
     compile project(':persistence')
 
+
     compile group: 'org.springframework', name: 'spring-context', version: springVersion
     compile group: 'cglib', name: 'cglib', version: '3.3.0'
 

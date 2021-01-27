@@ -25,7 +25,7 @@ import java.util.Optional;
 public class TagDAOImplAdv implements TagDAO {
 
     private static final Logger LOGGER = LogManager.getLogger(TagDAOImplAdv.class);
-    private CommonJpaOperations<Tag> commonJpaOperations = new CommonJpaOperations<>();
+    private final CommonJpaOperations<Tag> commonJpaOperations = new CommonJpaOperations<>();
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -62,7 +62,7 @@ public class TagDAOImplAdv implements TagDAO {
             LOGGER.error("tag wasn't create", e);
             throw new DAOException("tag wasn't created");
         }
-        return null;
+        return entity.getId();
     }
 
     @Override

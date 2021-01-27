@@ -44,7 +44,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
             //cross table name
             name = DAOConstants.CERTIFICATE_TAG_TABLE,
             //Certificate foreign key
-            joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID, referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID, referencedColumnName = ""),
             //Tag foreign key
             inverseJoinColumns = @JoinColumn(name = DAOConstants.CT_TAG_ID, referencedColumnName = "id"))
     private Set<Tag> certificateTags = new HashSet<>();

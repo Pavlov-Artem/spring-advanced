@@ -1,10 +1,8 @@
 package com.epam.esm.api.rest;
 
 import com.epam.esm.data.Tag;
-import com.epam.esm.data.UserOrder;
 import com.epam.esm.service.DAOException;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.data.CreateOrderDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

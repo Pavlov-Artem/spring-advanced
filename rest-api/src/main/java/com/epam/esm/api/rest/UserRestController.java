@@ -1,9 +1,7 @@
 package com.epam.esm.api.rest;
 
-import com.epam.esm.data.Tag;
 import com.epam.esm.data.User;
 import com.epam.esm.service.DAOException;
-
 import com.epam.esm.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserRestController {
-    private UserService userService;
+    private final UserService userService;
 
     public UserRestController(UserService userService) {
         this.userService = userService;
@@ -28,14 +26,15 @@ public class UserRestController {
     @GetMapping(value = "/users", params = {"page", "size"})
     public ResponseEntity<List<User>> getAll(@RequestParam("size") Long pageSize, @RequestParam("page") Long page) throws DAOException {
         List<User> users = userService.getAll(page, pageSize);
-        for (User user: users){
+        for (User user : users) {
             addLinks(user);
         }
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
+
     @GetMapping(value = "/users/{id}")
     public ResponseEntity<User> getById(@PathVariable Long id) throws DAOException {
-        User user = userService.findById(id);
+        User user = userService.getById(id);
         addLinks(user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }

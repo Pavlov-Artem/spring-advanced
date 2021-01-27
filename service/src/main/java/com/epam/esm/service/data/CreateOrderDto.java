@@ -1,4 +1,4 @@
-package com.epam.esm.api.data;
+package com.epam.esm.service.data;
 
 public class CreateOrderDto {
     private Long userId;

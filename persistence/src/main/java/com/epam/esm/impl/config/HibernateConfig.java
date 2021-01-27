@@ -57,47 +57,6 @@ public class HibernateConfig {
         return new HikariDataSource(hc);
     }
 
-//    @Bean
-//    @Profile("test")
-//    @ConfigurationProperties(value = "application-test.properties")
-//    public DataSource testDataSource() {
-////        LOGGER.info("Configuring hikari cp");
-////        LOGGER.info("props driver" + environment.getRequiredProperty("driver-class-name"));
-////        LOGGER.info("props url" + environment.getRequiredProperty("url"));
-////        LOGGER.info("props user" + environment.getRequiredProperty("username"));
-////        HikariConfig hc = new HikariConfig();
-//////        hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
-//////        hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
-//////        hc.setUsername(environment.getRequiredProperty("spring.datasource.username"));
-//////        hc.setPassword(environment.getRequiredProperty("spring.datasource.password"));
-//        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
-//                .addDefaultScripts()
-//                .setType(EmbeddedDatabaseType.H2)
-//                .build();
-////        LOGGER.info(hc.getUsername());
-//        dataSource = embeddedDatabase;
-//        return embeddedDatabase;
-//    }
-
-
-//    public DataSource dataSourceTest(){
-//        EmbeddedDatabase
-//    }
-//    @Bean
-//    public DataSource dataSourceTest() {
-//        LOGGER.info("Configuring hikari cp");
-//        LOGGER.info("props driver" + environment.getRequiredProperty("driver-class-name"));
-//        LOGGER.info("props url" + environment.getRequiredProperty("url"));
-//        LOGGER.info("props user" + environment.getRequiredProperty("username"));
-//        HikariConfig hc = new HikariConfig();
-//        hc.setDriverClassName(environment.getRequiredProperty("driver-class-name"));
-//        hc.setJdbcUrl(environment.getRequiredProperty("url"));
-//        hc.setUsername(environment.getRequiredProperty("username"));
-//        hc.setPassword(environment.getRequiredProperty("password"));
-//        LOGGER.info(hc.getUsername());
-//        return new HikariDataSource(hc);
-//    }
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -119,22 +78,5 @@ public class HibernateConfig {
                 entityManagerFactory().getObject());
         return transactionManager;
     }
-
-//    @Bean
-//    public LocalSessionFactoryBean sessionFactory() {
-//        LOGGER.info("create session factory");
-//        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-//        sessionFactory.setDataSource(dataSource());
-//        sessionFactory.setPackagesToScan("classpath:com.epam.esm");
-//        sessionFactory.setHibernateProperties(hibernateProperties());
-//        return sessionFactory;
-//    }
-
-//    @Bean
-//    public HibernateTransactionManager transactionManager() {
-//        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-//        transactionManager.setSessionFactory(entityManagerFactory().ge);
-//        return transactionManager;
-//    }
 }
 
