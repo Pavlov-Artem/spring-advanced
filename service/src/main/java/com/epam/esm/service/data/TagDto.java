@@ -1,4 +1,4 @@
-package com.epam.esm.service.data;
+package com.epam.esm.api.data;
 
 public class TagDto {
 
