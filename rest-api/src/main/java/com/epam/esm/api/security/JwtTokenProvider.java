@@ -18,12 +18,12 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
     private static final String JWT_EXPIRE_MESSAGE = "JWT token is expired or invalid";
-    @Value("${jwt.expiration.time}")
+    //@Value("${jwt.expiration.time}")
     private final Long jwtTokenExpTime = 86400L;
-    @Value("${jwt.token.secret}")
+    //@Value("${jwt.token.secret}")
     private final String secret = "jwtsecret";
 
-    @Qualifier("jwtUserDetailsService")
+    @Qualifier("JwtUserDetailsService")
     private final UserDetailsService userDetailsService;
 
     public JwtTokenProvider(UserDetailsService userDetailsService) {

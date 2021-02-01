@@ -1,5 +1,6 @@
 package com.epam.esm.api.filter;
 
+import com.epam.esm.api.security.JwtAuthenticationException;
 import com.epam.esm.api.security.JwtTokenProvider;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.core.annotation.Order;
@@ -39,13 +40,13 @@ public class JwtValidationFilter extends OncePerRequestFilter {
             String jwtToken = requestTokenHeader.substring(BEARER_HEADER_OFFSET);
             try {
                 if (!jwtTokenProvider.validateToken(jwtTokenProvider.resolveToken(request))) {
-                    throw new IllegalArgumentException("JWT token is expired or invalid");
+                    throw new JwtAuthenticationException("JWT token is expired or invalid");
                 }
                 String username = jwtTokenProvider.getUsernameFromToken(jwtToken);
                 request.setAttribute(USERNAME_REQUEST_ATTRIBUTE, username);
                 request.setAttribute(JWT_REQUEST_ATTRIBUTE, jwtToken);
             } catch (SignatureException e) {
-                throw new AccessDeniedException("Calculating JWT signature failed: JWT signature does not match locally computed signature.");
+                throw new AccessDeniedException("JWT signature does not match locally computed signature.");
             } catch (IllegalArgumentException e) {
                 throw new AccessDeniedException("Unable to get JWT Token");
             }

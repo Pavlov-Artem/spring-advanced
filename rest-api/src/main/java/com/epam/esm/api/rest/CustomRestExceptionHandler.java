@@ -1,6 +1,7 @@
 package com.epam.esm.api.rest;
 
 import com.epam.esm.api.rest.exceptions.InvalidInputParametersException;
+import com.epam.esm.api.security.JwtAuthenticationException;
 import com.epam.esm.api.validation.ValidationException;
 import com.epam.esm.service.exceptions.EntityNotFoundDaoException;
 import com.epam.esm.service.exceptions.EntityNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -30,7 +32,6 @@ import java.util.List;
 
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
-
 
     private static final Logger logger = LogManager.getLogger(CustomRestExceptionHandler.class);
     // 400
@@ -100,7 +101,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info(ex.getClass().getName());
         //
         final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
-
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), error);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
@@ -108,38 +108,27 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidInputParametersException.class)
     public ResponseEntity<Object> handleInvalidParametersException(final InvalidInputParametersException ex) {
-
-
         logger.info(ex.getClass().getName());
         //
         final String error = ex.getMessage();
-
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), error);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidationException(final ValidationException ex) {
-
-//        String errorsList = String.join("\n", ex.getValidationResult().getErrorMessages());
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "wrong input data", ex.getValidationResult().getErrorMessages());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-
     }
 
     // 404
 
     @ExceptionHandler({EntityNotFoundException.class, EntityNotFoundDaoException.class})
     public ResponseEntity<Object> handleEntityNotFoundException(final EntityNotFoundDaoException ex, final WebRequest request) {
-
         logger.info(ex.getClass().getName());
-        //
         final String error = "Entity not found  " + ex.getId();
-
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage(), error);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-
     }
 
     @Override
@@ -157,7 +146,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         logger.info(ex.getClass().getName());
-        //
         final StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
         builder.append(" method is not supported for this request. Supported methods are ");
@@ -190,6 +178,13 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("error", ex);
 
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error", "error occurred");
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler({JwtAuthenticationException.class, AccessDeniedException.class})
+    public ResponseEntity<Object> handleJwtExceptions(final JwtAuthenticationException ex, final WebRequest request) {
+        logger.error("error", ex);
+        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), "unauthorized");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

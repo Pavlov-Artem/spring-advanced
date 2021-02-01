@@ -26,6 +26,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 //    runtimeOnly 'com.h2database:h2'
 //    runtimeOnly 'mysql:mysql-connector-java'
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.4.2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
