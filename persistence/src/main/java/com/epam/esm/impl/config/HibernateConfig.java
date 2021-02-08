@@ -47,11 +47,11 @@ public class HibernateConfig {
     }
 
     @Bean
-    @Profile("prod")
     public DataSource dataSource() {
         HikariConfig hc = new HikariConfig();
         hc.setDriverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
         hc.setJdbcUrl(environment.getRequiredProperty("spring.datasource.url"));
+        LOGGER.info(environment.getRequiredProperty("spring.datasource.url"));
         hc.setUsername(environment.getRequiredProperty("spring.datasource.username"));
         hc.setPassword(environment.getRequiredProperty("spring.datasource.password"));
         return new HikariDataSource(hc);

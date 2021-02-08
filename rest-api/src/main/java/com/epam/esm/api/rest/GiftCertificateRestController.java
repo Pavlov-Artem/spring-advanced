@@ -61,13 +61,15 @@ public class GiftCertificateRestController {
         return ResponseEntity.status(HttpStatus.OK).body(giftCertificateDto);
     }
 
+
     @PutMapping("/certificates/{id}")
     public ResponseEntity<String> updateCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto, @PathVariable Long id) throws DAOException {
+
         giftCertificatesService.updateCertificate(giftCertificateCreateDto, id);
         return ResponseEntity.status(HttpStatus.CREATED).body("updated successfully");
     }
 
-    @PutMapping("/certificates")
+    @PostMapping("/certificates")
     public ResponseEntity<String> createCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto) throws DAOException {
         ValidationResult validationResult = certificateCreationValidator.validate(giftCertificateCreateDto);
         if (validationResult.isValid()) {
