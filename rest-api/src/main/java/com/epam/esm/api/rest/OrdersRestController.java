@@ -1,5 +1,6 @@
 package com.epam.esm.api.rest;
 
+import com.epam.esm.api.AppConstants;
 import com.epam.esm.data.UserOrder;
 import com.epam.esm.service.DAOException;
 import com.epam.esm.service.OrderService;
@@ -15,14 +16,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class OrdersRestController {
-    private OrderService orderService;
+    private final OrderService orderService;
 
     public OrdersRestController(OrderService orderService) {
         this.orderService = orderService;
     }
 
     @GetMapping(value = "/orders", params = {"page", "size"})
-    public ResponseEntity<List<UserOrder>> getAll(@RequestParam("size") Long pageSize, @RequestParam("page") Long page) throws DAOException {
+    public ResponseEntity<List<UserOrder>> getAll(@RequestParam(name = "size", required = false) Long pageSize,
+                                                  @RequestParam(name = "page", required = false) Long page) throws DAOException {
+        if (pageSize == null || page == null) {
+            page = AppConstants.DEFAULT_PAGE;
+            pageSize = AppConstants.DEFAULT_PAGE_SIZE;
+        }
         List<UserOrder> userOrders = orderService.getAll(pageSize, page);
         for (UserOrder userOrder: userOrders) {
             addLinks(userOrder);

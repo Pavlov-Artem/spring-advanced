@@ -34,6 +34,8 @@ public class ApiError {
         errors = Arrays.asList(error);
     }
 
+    public ApiError() {
+    }
 
     public HttpStatus getStatus() {
         return status;

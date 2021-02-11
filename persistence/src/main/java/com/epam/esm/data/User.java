@@ -26,7 +26,7 @@ public class User extends RepresentationModel<User> implements Serializable {
     private String email;
     @Column
     private String password;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<UserOrder> userOrders = new HashSet<>();
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(

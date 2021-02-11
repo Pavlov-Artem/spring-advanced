@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ADMIN = "ADMIN";
@@ -25,6 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtRequestFilter jwtRequestFilter;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
 
     public WebSecurityConfig(JwtRequestFilter jwtRequestFilter, JwtAuthenticationEntryPoint unauthorizedHandler) {
         this.jwtRequestFilter = jwtRequestFilter;
@@ -53,6 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/token").permitAll()
                 .antMatchers("/api/**").permitAll()
+                .antMatchers("/orders").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users").hasAnyRole("ADMIN", "USER")
                 .antMatchers(HttpMethod.GET,"/certificates").permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -1,6 +1,7 @@
 package com.epam.esm.api.rest;
 
 import com.epam.esm.api.filter.JwtRequestFilter;
+import com.epam.esm.api.filter.JwtValidationFilter;
 import com.epam.esm.service.data.AuthenticationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -23,8 +24,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.HttpServletResponse;
-
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,6 +37,10 @@ class AuthenticateControllerTest {
     private final Logger LOG = LogManager.getLogger(AuthenticateControllerTest.class);
 
     @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private JwtValidationFilter jwtValidationFilter;
+    @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
@@ -47,6 +50,7 @@ class AuthenticateControllerTest {
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
+                .addFilters(jwtRequestFilter, jwtValidationFilter)
                 .build();
     }
 
@@ -71,7 +75,7 @@ class AuthenticateControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(authenticationRequest );
+        String requestJson = ow.writeValueAsString(authenticationRequest);
         ResultActions resultActions = mvc.perform(post("/api/token")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -80,13 +84,13 @@ class AuthenticateControllerTest {
         String contentResult = mvcResult.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(contentResult);
         String token = jsonObject.getString("token");
-        LOG.info("token");
+        LOG.info(token);
     }
 
     @Test
     public void requestWithNotValidToken() throws Exception {
-        mvc.perform(post("/orders")
-                .header("token","asdgbhk343njbasdasf")
+        ResultActions resultActions = mvc.perform(get("/orders")
+                .header("Bearer ", "asdgbhk343njbasdasf")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -94,11 +98,32 @@ class AuthenticateControllerTest {
     @Test
     public void requestWithValidToken() throws Exception {
         //request for token
+        String token = getToken();
+        // request with valid token
+        mvc.perform(get("/orders?page=1&size=10")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        LOG.info("token");
+    }
+
+    @Test
+    void requestForAllUsers() throws Exception {
+        //request for token
+        String token = getToken();
+        mvc.perform(get("/users?page=1&size=10")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    private String getToken() throws Exception {
         AuthenticationRequest authenticationRequest = new AuthenticationRequest("test1@gmail.com", "123");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(authenticationRequest );
+        String requestJson = ow.writeValueAsString(authenticationRequest);
         ResultActions resultActions = mvc.perform(post("/api/token")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -106,12 +131,6 @@ class AuthenticateControllerTest {
         MvcResult mvcResult = resultActions.andReturn();
         String contentResult = mvcResult.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(contentResult);
-        String token = jsonObject.getString("token");
-        // request with valid token
-        mvc.perform(get("/orders")
-                .header(HttpHeaders.AUTHORIZATION,token)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        LOG.info("token");
+        return jsonObject.getString("token");
     }
 }

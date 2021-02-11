@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -35,6 +35,7 @@ import java.util.List;
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger logger = LogManager.getLogger(CustomRestExceptionHandler.class);
+
     // 400
 
     @Override
@@ -171,9 +172,30 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex,
+                                                                 WebRequest request) {
+        ApiError apiError;
+        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().noneMatch(r -> r.getAuthority().contains("ROLE_ANONYMOUS"))) {
+            apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getMessage(), ex.getMessage());
+            return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+        } else {
+            apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), "Access denied");
+            return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @ExceptionHandler(JwtAuthenticationException.class)
+    protected ResponseEntity<Object> handleAuthenticationException(JwtAuthenticationException ex,
+                                                                   WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), "Authentication failed");
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
     // 500
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
         logger.error("error", ex);
@@ -181,15 +203,4 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error", "error occurred");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
-
-    //401
-
-    @ExceptionHandler({AuthenticationException.class, AccessDeniedException.class, JwtAuthenticationException.class})
-    public ResponseEntity<Object> handleJwtExceptions(final Exception ex, final WebRequest request) {
-        logger.error("error", ex);
-        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), "unauthorized");
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-    }
-
-
 }
